@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gajurga presents: Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: "Press Start 2P", cursive;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #49297e;
+            color: #00db96;
+            transform-origin: center;
+            transition: transform 1s ease;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 5px;
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background-color: #90dcff;
+            border: 2px solid #e10086;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #49297e;
+        }
+
+        .cell.taken {
+            pointer-events: none;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 1em;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 5px 10px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #fdfb76;
+            border: none;
+            color: #49297e;
+            border-radius: 5px;
+        }
+
+        #quotes {
+            margin-top: 30px;
+            font-size: 0.9em;
+            font-style: italic;
+            color: #90dcff;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Gajurga presents: Tic Tac Toe</h1>
+    <div class="board" id="board"></div>
+    <div id="status"></div>
+    <button onclick="resetGame()">Restart Game</button>
+    <div id="quotes"></div>
+
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        const quotesDiv = document.getElementById('quotes');
+
+        const quotes = [
+            "The ultimate strategy lies not in winning, but in forcing your opponent to lose.",
+            "The grid holds the wisdom of both simplicity and complexity.",
+            "To control the center is to control the game.",
+            "Every line is a connection between strategy and intuition.",
+            "A blocked path is not the end, but the beginning of a new opportunity.",
+            "In Tic Tac Toe, patience is as powerful as planning.",
+            "The corner is the refuge of the cunning player.",
+            "A blank square is the embodiment of hope and potential.",
+            "Victory belongs to the one who sees the board, not just the moves.",
+            "Three in a row is the ultimate harmony of thought.",
+            "The first move is the seed of the final outcome.",
+            "In the simplicity of three by three lies endless possibility.",
+            "Tic Tac Toe is a game of presence, not just strategy.",
+            "The smallest grid teaches the greatest lessons.",
+            "To block is to defend, to move is to dream.",
+            "Each square is a choice between chaos and order.",
+            "The key to Tic Tac Toe is to think beyond the current turn.",
+            "The wisdom of the grid is in its balance.",
+            "Every X and O is a marker of intention.",
+            "To play is to reveal the depths of your thought.",
+            "A true master sees the entire grid in every move.",
+            "The beauty of Tic Tac Toe is in its perfect symmetry.",
+            "Every square is a battlefield of the mind.",
+            "The art of Tic Tac Toe lies in anticipating your opponent.",
+            "To lose is to learn, to draw is to find peace.",
+            "Tic Tac Toe mirrors the balance of life itself.",
+            "A draw is the ultimate testament to equality.",
+            "Every game starts the same but ends uniquely.",
+            "The genius of Tic Tac Toe is its eternal simplicity.",
+            "A single move can define the entire game.",
+            "The board is small, but the strategies are vast.",
+            "Victory comes to those who master the balance of offense and defense.",
+            "The quiet spaces on the board speak volumes.",
+            "The simplicity of the grid masks the complexity of thought.",
+            "Tic Tac Toe teaches the value of both action and inaction.",
+            "Each move is a step toward harmony or discord.",
+            "The grid is a mirror, reflecting the mind of its players.",
+            "To draw is to find equilibrium in the struggle.",
+            "Every corner hides an opportunity for greatness.",
+            "The smallest mistakes echo the loudest.",
+            "Each player leaves a mark, but only one leaves a legacy.",
+            "The brilliance of Tic Tac Toe is its infinite endings.",
+            "Victory is a fleeting moment, but the game is eternal.",
+            "A good player sees the move; a great player sees the grid.",
+            "To control the grid, one must embrace its limits.",
+            "The essence of Tic Tac Toe is foresight.",
+            "To win is to weave your marks into the board’s story.",
+            "Every game is a dance between freedom and constraint.",
+            "The quiet symmetry of the grid is a lesson in balance.",
+            "The most subtle moves are often the most powerful.",
+            "The first player starts the story, but the second player controls the plot.",
+            "The grid is a playground for logic and creativity.",
+            "The wisdom of Tic Tac Toe lies in knowing when to sacrifice.",
+            "A victory earned is sweeter than a victory given.",
+            "The smallest victory holds the greatest meaning.",
+            "Tic Tac Toe is the art of mastering the obvious.",
+            "The balance of Xs and Os mirrors the balance of life.",
+            "The center square is the heart of all strategy.",
+            "The board may be simple, but the players are not.",
+            "The greatest moves are the ones your opponent never sees.",
+            "Every game begins with infinite potential.",
+            "The grid reveals the truth of every decision.",
+            "A game of Tic Tac Toe is a conversation between two minds.",
+            "Each square is a battleground for control.",
+            "The beauty of the game lies in its endless possibilities.",
+            "To master Tic Tac Toe is to master the art of balance.",
+            "In the stillness of the grid lies the wisdom of strategy.",
+            "The board teaches that even the smallest mistake can ripple through eternity.",
+            "To play Tic Tac Toe is to find order in chaos.",
+            "The simplicity of the game hides its infinite depth.",
+            "A move made in haste is a lesson learned in patience.",
+            "The greatest victories are the ones won with subtlety.",
+            "The corners hold the secrets to the grid.",
+            "To see the whole board is to see the future.",
+            "The grid is a canvas, and the players are its artists.",
+            "To draw is to embrace the equality of minds.",
+            "The smallest victories are the sweetest.",
+            "Tic Tac Toe teaches us to value every move.",
+            "The silence of the grid is where strategy speaks the loudest.",
+            "Every X and O carries the weight of its player’s intent.",
+            "The grid reminds us that even small games hold great truths.",
+            "The first move is a promise; the last move is its fulfillment.",
+            "The quiet balance of Tic Tac Toe reflects the balance of life.",
+            "Every square holds a universe of possibilities.",
+            "The board may be small, but its lessons are vast.",
+            "Victory is fleeting, but the wisdom of the game is eternal.",
+            "Each move is a step closer to understanding the infinite.",
+            "Tic Tac Toe is a reflection of life: sometimes the simplest move is the most profound.",
+            "Victory is not in the third X, but in the patience of the first two.",
+            "In the game of Tic Tac Toe, every square is both a choice and a consequence.",
+            "True mastery is knowing when not to play your turn.",
+            "The empty square holds infinite potential until it is claimed.",
+            "A draw is not failure, but harmony between equals.",
+            "Each move in Tic Tac Toe echoes the balance between chaos and order.",
+            "Winning is temporary, but the grid is eternal.",
+            "To understand Tic Tac Toe is to understand the nature of foresight."
+
+        ];
+
+        function displayRandomQuote() {
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            quotesDiv.textContent = randomQuote;
+        }
+
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let gameState = Array(9).fill(null);
+
+        const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        async function fetchWeather() {
+            const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+            const city = 'Tel Aviv';
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const temp = data.main.temp; // Get the temperature in Celsius
+                applyZoomEffect(temp);
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+            }
+        }
+
+        function applyZoomEffect(temp) {
+            const scale = 1 + (temp - 20) / 50; // Normalize scale around 20°C
+            document.body.style.transform = `scale(${Math.max(0.8, Math.min(scale, 1.5))})`;
+        }
+
+        function checkWinner() {
+            for (const condition of winningConditions) {
+                const [a, b, c] = condition;
+                if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                    return gameState[a];
+                }
+            }
+            return gameState.includes(null) ? null : 'Draw';
+        }
+
+        function handleCellClick(event) {
+            const cellIndex = event.target.dataset.index;
+
+            if (gameState[cellIndex] || !gameActive) return;
+
+            gameState[cellIndex] = currentPlayer;
+            event.target.textContent = currentPlayer;
+            event.target.classList.add('taken');
+
+            const winner = checkWinner();
+
+            if (winner) {
+                gameActive = false;
+                status.textContent = winner === 'Draw' ? "It's a Draw!" : `${winner} Wins!`;
+            } else {
+                currentPlayer = 'O';
+                status.textContent = `Player ${currentPlayer}'s turn`;
+                if (currentPlayer === 'O') {
+                    computerMove();
+                }
+            }
+        }
+
+        function computerMove() {
+            setTimeout(() => {
+                if (!gameActive) return;
+
+                const winningMove = findBestMove('O');
+                const blockingMove = findBestMove('X');
+                const move = winningMove !== null ? winningMove : blockingMove !== null ? blockingMove : findRandomMove();
+
+                gameState[move] = 'O';
+                const cell = document.querySelector(`[data-index='${move}']`);
+                cell.textContent = 'O';
+                cell.classList.add('taken');
+
+                const winner = checkWinner();
+
+                if (winner) {
+                    gameActive = false;
+                    status.textContent = winner === 'Draw' ? "It's a Draw!" : `${winner} Wins!`;
+                } else {
+                    currentPlayer = 'X';
+                    status.textContent = `Player ${currentPlayer}'s turn`;
+                }
+            }, 500);
+        }
+
+        function findBestMove(player) {
+            for (const condition of winningConditions) {
+                const [a, b, c] = condition;
+                const values = [gameState[a], gameState[b], gameState[c]];
+                if (values.filter(v => v === player).length === 2 && values.includes(null)) {
+                    return condition[values.indexOf(null)];
+                }
+            }
+            return null;
+        }
+
+        function findRandomMove() {
+            const availableIndices = gameState.map((value, index) => value === null ? index : null).filter(index => index !== null);
+            return availableIndices[Math.floor(Math.random() * availableIndices.length)];
+        }
+
+        function resetGame() {
+            currentPlayer = 'X';
+            gameActive = true;
+            gameState = Array(9).fill(null);
+            status.textContent = `Player ${currentPlayer}'s turn`;
+            
+            while (board.firstChild) {
+                board.removeChild(board.firstChild);
+            }
+
+            createBoard();
+            displayRandomQuote();
+        }
+
+        function createBoard() {
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.addEventListener('click', handleCellClick);
+                board.appendChild(cell);
+            }
+        }
+
+        createBoard();
+        status.textContent = `Player ${currentPlayer}'s turn`;
+        displayRandomQuote();
+        fetchWeather();
+    </script>
+</body>
+</html>
